@@ -8,7 +8,7 @@ from torchvision import datasets, models, transforms
 "The classification Head remains differest which is task based"
 
 "class specific features are limited to last layer"
-def ClassHead(nn.Module):
+class ClassHead(nn.Module):
     """
     Only the last layer changes which is task specific 
     """
@@ -21,14 +21,14 @@ def ClassHead(nn.Module):
 
 
 
-def SharedModel(nn.Module):
+class SharedModel(nn.Module):
     """
     As Shared model is same all across, I am taking alexnet for time being as the baseline
     """
-    def __init__(self):
+    def __init__(self, model):
         super(SharedModel, self).__init__()
-        self.model = models.alexnet(pretrained=True)
-        self.params = {}
-
+        self.xmodel = models.alexnet(pretrained=True)
+        self.params = { }
+    
     def forward(self,x):
-        return self.model(x)
+        return self.xmodel(x)
