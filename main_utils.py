@@ -53,7 +53,33 @@ def model_initialiser(no_of_classes,use_gpu):
 
     return pre_model
 
-def forgetting(task,dataloader,size,use_gpu)
+def MAS(model,task,epochs,no_of_classes,lr=.001,schduler_lambda=.01,num_frozen,use_gpu=False,trdataload,tedataload,train_size,test_size):
+    """
+    Training Loop for the MAS
+    Inputs:
+        model
+        task
+        epochs
+        no_of_classes
+        lr
+        scheduler_lambda
+        use_gpu
+        trdataload
+        tedataload
+        train_size
+        test_size
+
+    Outputs:
+        model : Trained model
+    """
+    ## For task no. 1
+    if (task ==1):
+        as
+
+
+
+def compute_forgetting(task,dataloader,size,use_gpu)
     """
     Funtion to calculate the forgetting on previous tasks whuch have already been learnt
     """
+    
