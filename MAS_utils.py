@@ -15,6 +15,8 @@ import math
 import shutil
 from torch.utils.data import DataLoader
 
+from optimizers import *
+
 def create_freeze_layers(model, num_layers = 2):
     """
     Returning the model with frozen layers for which require gradient argument to be false
@@ -53,8 +55,46 @@ def create_freeze_layers(model, num_layers = 2):
         name_1 = "features." + temp_key + ".weight"
         name_2 = "features." + temp_key + ".bias"
 
+        ## this list will contatin the name of the layers for which requires_grad is made true
         frozen_layers_data.append(name1)
         frozen_layers_data.append(name2)
     
     return model,frozen_layers_data
+
+def initialising_omega(model,use_gpu,frozen_layers=[]):
+    """
+    Function:
+
+        Inputs:
+
+        Outputs:
+
+    """
+    device = torch.device("cuda:0" if use_gpu else "cpu")
+
+    ## A dictionary to store the initialised omega values with the key and the values being the weights of the layer and importance value
+    reg_params = {}
+
+    ##Iterating over the the model in which name will give the name of the layer and param is giving the weights stored inside the correseponding layer
+    ## For the frozen layers the omega will be calculated and reset every time new task is being trained
+    for name, param in model.xmodel.named_parameters():
+        if not name in frozen_layers:
+
+            print ("Initialsing omega values for layer", name)
+            omega = torch.zeros(param.size())
+            omega = omega.to(device)
+
+            init_val = param.data.clone()
+            param_dict = {}
+
+            ## init_val is just a variable which stores the weights of the corresponding layer
+            #for first task, omega is initialised to zero
+            param_dict["omega"]= omega
+            param_dict["init_val"] = init_val ## storing the initial value
+
+            reg_params[param] = param_dict ######
+
+    model.params = reg_params
+
+    return model
 
