@@ -10,6 +10,7 @@ import copy
 import os
 import shutil
 import pickle
+import time
 
 
 from optimizers import *
@@ -47,7 +48,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr=.001
         model = model.load_state_dict(checkpoint['state_dict'])
 
         print('Loading the optimizer')
-        optimizer = local_sgd(model.reg_params, reg_lambda)
+        optimizer = local_sgd(model.params, scheduler_lambda)
         optimizer = optimizer.load_state_dict(checkpoint['optimizer'])
 
         print('Done')
@@ -61,4 +62,70 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr=.001
         ## Omega accumulation is done at the convergence of the loss function
         if(epoch == epochs-1):
             ## Notice the fact that no training happens during this 
-            optimizer_
+            optimizer_ft = omega_update(model.reg_params)
+            print("Updating the omega values for this task")
+            model = 
+
+
+
+        else:
+
+            since = time.time()
+            best_perform = 10e6
+
+            print("Training on epoch no {} of {}".format(epoch+1,num_epoch))
+            print("-"*20)
+            running_loss = 0
+            running_corrects = 0
+
+            ## returning the optimizer and making it smaller every 20 rounds
+            optimizer = scheduler(optimizer, epoch,lr)
+
+            model.xmodel.train(True)
+
+            for input_data,labels in dataloader_train:
+                if use_gpu:
+                    input_data = input_data.to(device)
+                    labels = labels.to(device)
+
+                else:
+                    ## variable is just a wrapper around the tensors
+                    input_data = Variable(input_data)
+                    labels = Variable(labels)
+
+
+                model.xmodel.to(device)
+                ## resets the gradients
+                optimizer.zero_grad()
+
+                output = model.xmodel(input_data)
+                del input_data
+
+                not_req, predictions = torch.max(output,1)
+                loss = model_criterion(output,labels)
+                
+                del output
+                ##automatically computes the gradients and changes the parameters jfor which requires_grad is True
+
+                loss.backward()
+                optimizer.step(model.params)
+
+                running_loss += loss.item()
+                del loss
+                running_corrects += torch.sum(preds = labels.data)
+                del preds 
+                del labels
+
+            epoch_loss = running_loss/train_size
+            ## In order to get the accuracy in double we need to have atleast 1 variable of type double
+            epoch_accuracy =  running_corrects.double()/train_size
+
+            print("Loss: {} Accuracy:{} ".format(epoch_loss,epoch_accuracy))
+            
+            # avoiding the filw to be written twice
+            if(epoch!=0 and epoch != epochs-1 and (epoch+1)%10 ==0):
+                epoch_file
+
+
+
+

@@ -131,3 +131,22 @@ def create_task_dir( num_classes, store_path):
         file1.close()
 
     return
+
+def scheduler(optimizer,epoch,lr=.0008):
+    """
+    Function: This function will decay the learning rate after every 20 epochs
+    Inputs:
+        optimizer: Localsgd in our case
+
+    """
+    weight_decay_epoch = 20
+    lr = init_lr * (.1 **(epoch // weight_decay_epoch ))
+    print("lr is "+str(lr))
+
+    if (epoch % weight_decay_epoch == 0):
+        print("Lr is set to {}".format(lr))
+
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+    return optimizer
