@@ -13,6 +13,7 @@ import pickle
 
 from model import *
 from optimizers import *
+from trainloop import *
 
 def model_initialiser(no_of_classes,use_gpu):
 
@@ -55,7 +56,7 @@ def model_initialiser(no_of_classes,use_gpu):
 
     return model
 
-def MAS(model,task,epochs,no_of_classes,lr=.001,schduler_lambda=.01,num_frozen,use_gpu=False,trdataload,tedataload,train_size,test_size):
+def MAS(model,task,epochs,no_of_classes,lr=.001,scheduler_lambda=.01,num_frozen,use_gpu=False,trdataload,tedataload,train_size,test_size):
     """
     Training Loop for the MAS
     Inputs:
@@ -105,7 +106,15 @@ def MAS(model,task,epochs,no_of_classes,lr=.001,schduler_lambda=.01,num_frozen,u
                     parma_dict['omega'] = new_omega
                     #storing the initial values of the parameters
                     param_dict['init_val']= init_val
-                    reg
+                    reg_params[param] = param_dict
+            
+        model.reg_params = reg_params
+        
+    ## model and omega values created
+    ## optimizers
+
+    optimizer = local_sgd(model.tmodel.parameters(), scheduler_lambda, lr)
+    mas_train()
 
 
 
