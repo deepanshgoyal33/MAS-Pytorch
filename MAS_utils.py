@@ -98,3 +98,36 @@ def initialising_omega(model,use_gpu,frozen_layers=[]):
 
     return model
 
+def check_checkpoints(storepath):
+    if not os.path.exists(storepath):
+        return ["",False]
+    
+    #directory exists but there is no checkpoint file
+	onlyfiles = [f for f in os.listdir(store_path) if os.path.isfile(os.path.join(store_path, f))]
+	max_train = -1
+	flag = False
+
+	#Check the latest epoch file that was created
+	for file in onlyfiles:
+		if(file.endswith('pth.tr')):
+			flag = True
+			test_epoch = file[0]
+			if(test_epoch > max_train): 
+				max_epoch = test_epoch
+				checkpoint_file = file
+	
+	#no checkpoint exists in the directory so return an empty string
+	if (flag == False): 
+		checkpoint_file = ""
+
+    return [checkpoint_file,flag]
+    
+def create_task_dir( num_classes, store_path):
+    os.makedir(store_path)
+    file = os.path.join(store_path,"classes.txt")
+    with open(file_path,'w') as file1:
+        input_to_textfile = str(num_classes)
+        file1.write(input_to_text_file)
+        file1.close()
+
+    return

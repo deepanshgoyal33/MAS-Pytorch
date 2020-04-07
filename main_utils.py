@@ -114,7 +114,7 @@ def MAS(model,task,epochs,no_of_classes,lr=.001,scheduler_lambda=.01,num_frozen,
     ## optimizers
 
     optimizer = local_sgd(model.tmodel.parameters(), scheduler_lambda, lr)
-    mas_train()
+    mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr=.001,scheduler_lambda=.01,num_frozen,use_gpu=False,trdataload,tedataload,train_size,test_size)
 
 
 
