@@ -150,3 +150,28 @@ def scheduler(optimizer,epoch,lr=.0008):
         param_group['lr'] = lr
 
     return optimizer
+
+def save_model(model,task , accuracy):
+    """
+    Function to save the model
+    """
+    path_to_model = os.path.join(os.getcwd(),"models")
+    path_to head = os.path.join(path_to_model, "Task_",task)
+
+    in_features = model.xmodel.classifier[-1].in_features
+    out_features = model.xmodel.classifier[-1].out_features
+
+    ref = ClassHead(in_features,out_features)
+    ref.classhead.weight.data= model.xmodel.classifier[-1].weight.data
+    ref.classhead.bias.data = model.xmodel.classifier[-1].bias.data
+
+    ##params a;ready saved in the params object inside the model class
+    reg_params = model.params
+
+    f = open(os.path.join(os.getcwd(),"models","reg_params.pickle"),'wb')
+    pickle.dump(reg_params,f)
+    f.close()
+
+    del model.xmodel.classifier[-1]
+
+    torch.save(model.state_dict(),)

@@ -124,8 +124,15 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr=.001
             
             # avoiding the filw to be written twice
             if(epoch!=0 and epoch != epochs-1 and (epoch+1)%10 ==0):
-                epoch_file
-
+                epoch_file = os.path.join(store_path, str(epoch+1),".pth.tar")
+                torch.save({
+                    'epoch': epoch,
+                    'epoch_loss': epoch_loss,
+                    'epoch_accuracy':epoch_accuracy,
+                    'model_state_dict':model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                }, epoch_file_name)
+    save_model(model, task, epoch_accuracy)
 
 
 
