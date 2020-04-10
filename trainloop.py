@@ -17,7 +17,7 @@ from optimizers import *
 from main_utils import *
 from MAS_utils import *
 
-def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr=.001,scheduler_lambda=.01,num_frozen,use_gpu=False,trdataload,tedataload,train_size,test_size):
+def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,scheduler_lambda,num_frozen,use_gpu,trdataload,tedataload,train_size,test_size):
     """
     Training Loop of the model
 
@@ -39,34 +39,58 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr=.001
         start_epoch =0
 
     else:
-        print("Loading checkpoint '{}' ".format(checkpoint_file))
-        checkpoint = torch.load(checkpoint_file)
-        start_epoch = checkpoint['epoch']
-        print("Loading the model")
-        ##Initialises the model with last classifier layers chaged as paer our needs and weights of the shared model put inside the model
-        model = model_initialiser(no_of_classes,use_gpu)
-        model = model.load_state_dict(checkpoint['state_dict'])
+        if(checkpoint_file==""):
+            start_epoch = 0
+        else:
+            print("Loading checkpoint '{}' ".format(checkpoint_file))
+            checkpoint = torch.load(checkpoint_file)
+            start_epoch = checkpoint['epoch']
+            print("Loading the model")
+            ##Initialises the model with last classifier layers chaged as paer our needs and weights of the shared model put inside the model
+            model = model_initialiser(no_of_classes,use_gpu)
+            model = model.load_state_dict(checkpoint['state_dict'])
 
-        print('Loading the optimizer')
-        optimizer = local_sgd(model.params, scheduler_lambda)
-        optimizer = optimizer.load_state_dict(checkpoint['optimizer'])
+            print('Loading the optimizer')
+            optimizer = local_sgd(model.params, scheduler_lambda)
+            optimizer = optimizer.load_state_dict(checkpoint['optimizer'])
 
-        print('Done')
+            print('Done')
 
     model.xmodel.train(True)
     model.xmodel.to(device)
 
     #training Loop starts
     for epoch in range(start_epoch,epochs+1):
-
         ## Omega accumulation is done at the convergence of the loss function
-        if(epoch == epochs-1):
+        if(epoch == epochs):
             ## Notice the fact that no training happens during this 
-            optimizer_ft = omega_update(model.reg_params)
+            optimizer_ft = omega_update(model.params)
             print("Updating the omega values for this task")
-            model = 
+            ## takes the input images calculate gradient and upadte the params
+            model = compute_omega_grads_norm(model,trdataload,optimizer_ft,use_gpu)
 
-
+            running_loss = 0
+            running_corrects=0
+            model.tmodel.eval()
+            for data in dataloader_test:
+                input_data , labels = data
+                del data
+                if use_gpu:
+                    input_data = input_data.to(device)
+                    labels = labels.to(device)
+                else:
+                    input_data  =  input_data
+                    labels = Variable(labels)
+				#optimizer.zero_grad()
+                output = model.tmodel(input_data)
+                del input_data
+                _, preds = torch.max(output, 1)
+                del output
+                
+                running_corrects += torch.sum(preds == labels.data)
+                del preds
+                del labels
+                epoch_accuracy = running_corrects.double()/dset_size_test
 
         else:
 
