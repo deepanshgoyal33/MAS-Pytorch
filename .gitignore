@@ -1,6 +1,5 @@
 tiny-imagenet-200/
 .ipynb_checkpoints/Experiments-checkpoint.ipynb
-Data/
 .vscode/
 __pycache__/
 .ipynb_checkpoints/
