@@ -156,7 +156,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
                     'epoch_accuracy':epoch_accuracy,
                     'model_state_dict':model.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
-                }, epoch_file_name)
+                }, epoch_file)
     save_model(model, task, epoch_accuracy)
 
 
