@@ -82,7 +82,7 @@ def MAS(model, task, epochs, no_of_classes, lr, scheduler_lambda, num_frozen, us
     if (task == 1):
         model, freezed_layers = create_freeze_layers(model, num_frozen)
 
-        model = initialsing_regulariser(model, use_gpu, freezed_layers, task)
+        model = initialsing_omega(model, use_gpu, task, freezed_layers)
 
     else:
         device = torch.device("cuda:0" if use_gpu else "cpu")
@@ -117,7 +117,8 @@ def MAS(model, task, epochs, no_of_classes, lr, scheduler_lambda, num_frozen, us
     # model and omega values created
     # optimizers
     model_criterion = nn.CrossEntropyLoss()
-    optimizer = local_sgd(model.tmodel.parameters(), scheduler_lambda, lr)
+    optimizer = local_sgd(model.xmodel.parameters(), scheduler_lambda, lr)
+    use_gpu= False
     mas_train(model, optimizer, model_criterion, task, epochs, no_of_classes, lr,
               scheduler_lambda, num_frozen, use_gpu, trdataload, tedataload, train_size, test_size)
 

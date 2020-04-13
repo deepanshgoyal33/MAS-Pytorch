@@ -38,7 +38,7 @@ def create_freeze_layers(model, num_layers=2):
     if(num_layers == 0):
         return []
 
-    temporary = []
+    temp_list = []
     frozen_layers_data = []
     # If we want 2 layers frozen then we have to make the requires_grad False for the num_layers number of conv2d in the feature module of the alexnet
     # and we can do that by making all other's requires_grad True
@@ -53,8 +53,8 @@ def create_freeze_layers(model, num_layers=2):
         for param in model.xmodel.features[int(temp_key)].parameters():
             param.requires_grad = True
 
-        name_1 = "features." + temp_key + ".weight"
-        name_2 = "features." + temp_key + ".bias"
+        name1 = "features." + temp_key + ".weight"
+        name2 = "features." + temp_key + ".bias"
 
         # this list will contatin the name of the layers for which requires_grad is made true
         frozen_layers_data.append(name1)
@@ -63,7 +63,7 @@ def create_freeze_layers(model, num_layers=2):
     return model, frozen_layers_data
 
 
-def initialising_omega(model, use_gpu, frozen_layers=[]):
+def initialsing_omega(model, use_gpu,task,frozen_layers=[]):
     """
     Function:
 
@@ -103,7 +103,8 @@ def initialising_omega(model, use_gpu, frozen_layers=[]):
 
 def check_checkpoints(storepath):
     if not os.path.exists(storepath):
-        return ["", False]
+        checkpoint_file = ""
+        flag = False
 
     # directory exists but there is no checkpoint file
         onlyfiles = [f for f in os.listdir(
@@ -124,15 +125,16 @@ def check_checkpoints(storepath):
         if (flag == False):
             checkpoint_file = ""
 
-    return [checkpoint_file, flag]
+    return checkpoint_file, flag
 
 
 def create_task_dir(num_classes, store_path):
-    os.makedir(store_path)
-    file = os.path.join(store_path, "classes.txt")
+    if not os.path.exists(store_path):
+        os.makedirs(store_path)
+    file_path = os.path.join(store_path, "classes.txt")
     with open(file_path, 'w') as file1:
-        input_to_textfile = str(num_classes)
-        file1.write(input_to_text_file)
+        input = str(num_classes)
+        file1.write(input)
         file1.close()
 
     return
@@ -146,7 +148,7 @@ def scheduler(optimizer, epoch, lr=.0008):
 
     """
     weight_decay_epoch = 20
-    lr = init_lr * (.1 ** (epoch // weight_decay_epoch))
+    lr = lr * (.1 ** (epoch // weight_decay_epoch))
     print("lr is "+str(lr))
 
     if (epoch % weight_decay_epoch == 0):

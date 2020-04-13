@@ -32,8 +32,9 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
     if(task== 1 and not os.path.isdir(model_path)):
         os.mkdir(model_path)
 
-    checkpoint_file, flag = check_checkpoints(store_path)
-    
+    #checkpoint_file, flag = check_checkpoints(store_path)
+
+    flag = False
     if(flag == False):
         create_task_dir( no_of_classes, store_path)
         start_epoch =0
@@ -97,7 +98,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
             since = time.time()
             best_perform = 10e6
 
-            print("Training on epoch no {} of {}".format(epoch+1,num_epoch))
+            print("Training on epoch no {} of {}".format(epoch+1,epochs))
             print("-"*20)
             running_loss = 0
             running_corrects = 0
@@ -107,7 +108,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
 
             model.xmodel.train(True)
 
-            for input_data,labels in dataloader_train:
+            for input_data,labels in trdataload:
                 if use_gpu:
                     input_data = input_data.to(device)
                     labels = labels.to(device)
@@ -124,7 +125,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
 
                 output = model.xmodel(input_data)
                 del input_data
-
+                # print(output.size(),"outputshape")
                 not_req, predictions = torch.max(output,1)
                 loss = model_criterion(output,labels)
                 
@@ -136,8 +137,8 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
 
                 running_loss += loss.item()
                 del loss
-                running_corrects += torch.sum(preds = labels.data)
-                del preds 
+                running_corrects += torch.sum(predictions == labels.data)
+                del predictions 
                 del labels
 
             epoch_loss = running_loss/train_size

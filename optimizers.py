@@ -25,9 +25,8 @@ class local_sgd(optim.SGD):
 		super(local_sgd, self).__setstate__(state)
 
 	def step(self, reg_params, closure = None):
-
+		device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 		loss = None
-
 		if closure is not None:
 			loss = closure()
 
@@ -53,10 +52,10 @@ class local_sgd(optim.SGD):
 					init_val = param_dict['init_val']
 
 					curr_param_value = p.data
-					curr_param_value = curr_param_value.cuda()
+					curr_param_value = curr_param_value.to(device)
 					
-					init_val = init_val.cuda()
-					omega = omega.cuda()
+					init_val = init_val.to(device)
+					omega = omega.to(device)
 
 					#get the difference
 					param_diff = curr_param_value - init_val
