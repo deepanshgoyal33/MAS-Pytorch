@@ -32,9 +32,9 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
     if(task== 1 and not os.path.isdir(model_path)):
         os.mkdir(model_path)
 
-    #checkpoint_file, flag = check_checkpoints(store_path)
+    checkpoint_file, flag = check_checkpoints(store_path)
 
-    flag = False
+    # flag = False
     if(flag == False):
         create_task_dir( no_of_classes, store_path)
         start_epoch =0
@@ -149,7 +149,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
             
             # avoiding the filw to be written twice
             if(epoch!=0 and epoch != epochs-1 and (epoch+1)%10 ==0):
-                epoch_file = os.path.join(store_path, str(epoch+1),".pth.tar")
+                epoch_file = os.path.join(store_path, str(epoch+1)+".pth.tar")
                 torch.save({
                     'epoch': epoch,
                     'epoch_loss': epoch_loss,
