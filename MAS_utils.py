@@ -108,7 +108,7 @@ def check_checkpoints(storepath):
 
     # directory exists but there is no checkpoint file
         onlyfiles = [f for f in os.listdir(
-            store_path) if os.path.isfile(os.path.join(store_path, f))]
+            storepath) if os.path.isfile(os.path.join(store_path, f))]
         max_train = -1
         flag = False
 
