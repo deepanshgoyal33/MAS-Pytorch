@@ -13,10 +13,11 @@ import os
 import pdb
 import math
 import shutil
+import pickle
 from torch.utils.data import DataLoader
 
 from optimizers import *
-
+from MAS_model import *
 
 def create_freeze_layers(model, num_layers=2):
     """
@@ -165,7 +166,7 @@ def save_model(model, task, accuracy):
     Function to save the model
     """
     path_to_model = os.path.join(os.getcwd(), "models")
-    path_to_head = os.path.join(path_to_model, "Task_", task)
+    path_to_head = os.path.join(path_to_model, "Task_", str(task))
 
     in_features = model.xmodel.classifier[-1].in_features
     out_features = model.xmodel.classifier[-1].out_features
@@ -216,7 +217,7 @@ def compute_omega_grads_norm(model, dataloader, optimizer, use_gpu):
 
         l2_norm = torch.norm(outputs, 2, dim=1)
         del outputs
-        squared_L2_norm = l2_norm**2
+        squared_l2_norm = l2_norm**2
         del l2_norm
 
         sum_norm = torch.sum(squared_l2_norm)
@@ -347,4 +348,4 @@ def consolidate_reg_params(model, use_gpu):
 
     model.reg_params = reg_params
 
-    return model
+    return mode

@@ -7,3 +7,4 @@ __pycache__/
 .ipynb_checkpoints/Dataprep-checkpoint.ipynb
 models/
 __pycache__/* .pyc
+MAS_*.out

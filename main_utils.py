@@ -118,7 +118,7 @@ def MAS(model, task, epochs, no_of_classes, lr, scheduler_lambda, num_frozen, us
     # optimizers
     model_criterion = nn.CrossEntropyLoss()
     optimizer = local_sgd(model.xmodel.parameters(), scheduler_lambda, lr)
-    use_gpu= False
+    use_gpu= True
     mas_train(model, optimizer, model_criterion, task, epochs, no_of_classes, lr,
               scheduler_lambda, num_frozen, use_gpu, trdataload, tedataload, train_size, test_size)
 
