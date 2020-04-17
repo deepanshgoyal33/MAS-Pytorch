@@ -166,7 +166,7 @@ def save_model(model, task, accuracy):
     Function to save the model
     """
     path_to_model = os.path.join(os.getcwd(), "models")
-    path_to_head = os.path.join(path_to_model, "Task_", str(task))
+    path_to_head = os.path.join(path_to_model, "Task_"+ str(task))
 
     in_features = model.xmodel.classifier[-1].in_features
     out_features = model.xmodel.classifier[-1].out_features
