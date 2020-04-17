@@ -187,7 +187,7 @@ def save_model(model, task, accuracy):
     torch.save(model.state_dict(), os.path.join(
         os.getcwd(), "models", "shared_model.pth"))
     torch.save(ref.state_dict(), os.path.join(
-        os.getcwd(), "models", "Task_no"+str(task), "head.pth"))
+        os.getcwd(), "models", "Task_"+str(task), "head.pth"))
 
     with open(os.path.join(path_to_head, "performance.txt"), 'w') as inputfile:
         input = str(accuracy.item())
