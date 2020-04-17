@@ -72,8 +72,8 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
 
             running_loss = 0
             running_corrects=0
-            model.tmodel.eval()
-            for data in dataloader_test:
+            model.xmodel.eval()
+            for data in tedataload:
                 input_data , labels = data
                 del data
                 if use_gpu:
@@ -83,7 +83,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
                     input_data  =  input_data
                     labels = Variable(labels)
 				#optimizer.zero_grad()
-                output = model.tmodel(input_data)
+                output = model.xmodel(input_data)
                 del input_data
                 _, preds = torch.max(output, 1)
                 del output
@@ -91,7 +91,7 @@ def mas_train(model,optimizer, model_criterion,task,epochs,no_of_classes,lr,sche
                 running_corrects += torch.sum(preds == labels.data)
                 del preds
                 del labels
-                epoch_accuracy = running_corrects.double()/dset_size_test
+                epoch_accuracy = running_corrects.double()/test_size
 
         else:
 
