@@ -127,7 +127,7 @@ print("Testing Phase")
 
 # test the sets on the test sets of the tasks
 
-for tasks in range(1, no_of_tasks + 1):
+for task in range(1, no_tasks + 1):
     print("Testiong the model on task{}".format(task))
     dataloader = test_dataloaders[task-1]
     dset_size = train_datasets[task-1]

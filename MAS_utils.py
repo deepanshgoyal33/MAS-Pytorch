@@ -349,3 +349,5 @@ def consolidate_reg_params(model, use_gpu):
     model.reg_params = reg_params
 
     return mode
+
+

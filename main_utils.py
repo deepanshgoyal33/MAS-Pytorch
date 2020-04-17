@@ -89,6 +89,7 @@ def MAS(model, task, epochs, no_of_classes, lr, scheduler_lambda, num_frozen, us
         # Now our model would have trained for task 1 by now we have to get the params learnt from previous task and for
         # for the num of layers that are frezon we have to reinitialise the omega prameters
         reg_params = model.params
+        model, freezed_layers = create_freeze_layers(model, num_frozen)
 
         for name, param in model.xmodel.named_parameters():
 
@@ -121,6 +122,58 @@ def MAS(model, task, epochs, no_of_classes, lr, scheduler_lambda, num_frozen, us
     mas_train(model, optimizer, model_criterion, task, epochs, no_of_classes, lr,
               scheduler_lambda, num_frozen, use_gpu, trdataload, tedataload, train_size, test_size)
 
+def model_inference(task_no, use_gpu = False):
+	
+	"""
+	Inputs
+	1) task_no: The task number for which the model is being evaluated
+	2) use_gpu: Set the flag to True if you want to run the code on GPU. Default value: False
+
+	Outputs
+	1) model: A reference to the model
+
+	Function: Combines the classification head for a particular task with the shared model and
+	returns a reference to the model is used for testing the process
+
+	"""
+
+	#all models are derived from the Alexnet architecture
+	pre_model = models.alexnet(pretrained = True)
+	model = SharedModel(pre_model)
+
+	path_to_model = os.path.join(os.getcwd(), "models")
+
+	path_to_head = os.path.join(os.getcwd(), "models", "Task_" + str(task_no))
+	
+	#get the number of classes by reading from the text file created during initialization for this task
+	file_name = os.path.join(path_to_head, "classes.txt") 
+	file_object = open(file_name, 'r')
+	num_classes = file_object.read()
+	file_object.close()
+	
+	num_classes = int(num_classes)
+	#print (num_classes)
+	in_features = model.xmodel.classifier[-1].in_features
+	
+	del model.xmodel.classifier[-1]
+	#load the classifier head for the given task identified by the task number
+	classifier = ClassHead(in_features, num_classes)
+	classifier.load_state_dict(torch.load(os.path.join(path_to_head, "head.pth")))
+
+	#load the trained shared model
+	model.load_state_dict(torch.load(os.path.join(path_to_model, "shared_model.pth")))
+
+	model.xmodel.classifier.add_module('6', nn.Linear(in_features, num_classes))
+
+	#change the weights layers to the classifier head weights
+	model.xmodel.classifier[-1].weight.data = classifier.classhead.weight.data
+	model.xmodel.classifier[-1].bias.data = classifier.classhead.bias.data
+
+	#device = torch.device("cuda:0" if use_gpu else "cpu")
+	model.eval()
+	#model.to(device)
+	
+	return model
 
 def compute_forgetting(task, dataloader, size, use_gpu):
     """
@@ -136,7 +189,7 @@ def compute_forgetting(task, dataloader, size, use_gpu):
     old_performance = file_object.read()
     file_object.close()
 
-    model = model_inferece(task_no, use_gpu=False)
+    model = model_inference(task, use_gpu=False)
     model.to(device)
     running_corrects = 0
     for data in dataloader:
@@ -158,7 +211,7 @@ def compute_forgetting(task, dataloader, size, use_gpu):
         del preds
         del labels
 
-    epoch_accuracy = running_corrects.double()/dset_size
+    epoch_accuracy = running_corrects.double()/size
     old_performance = float(old_performance)
     forgetting = epoch_accuracy.item() - old_performance
     return forgetting
